@@ -1,3 +1,5 @@
+param([switch]$Lite)
+
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
@@ -17,7 +19,9 @@ if (-not (Test-Path (Join-Path $Dist "RoseSI.exe"))) {
 }
 
 Write-Host "== bundled models =="
-& $Python (Join-Path $PSScriptRoot "prepare_models.py") $Dist
+$PrepArgs = @((Join-Path $PSScriptRoot "prepare_models.py"), $Dist)
+if ($Lite) { $PrepArgs += "--lite" }
+& $Python @PrepArgs
 if ($LASTEXITCODE -ne 0) { throw "prepare_models failed" }
 
 Write-Host "== docs / extension =="
@@ -28,10 +32,15 @@ if (Test-Path $LicDst) { Remove-Item -Recurse -Force $LicDst }
 Copy-Item -Recurse -Force (Join-Path $Root "extension") $ExtDst
 Copy-Item -Force (Join-Path $Root "README.md") $Dist
 Copy-Item -Force (Join-Path $Root "THIRD_PARTY_NOTICES.md") $Dist
-Copy-Item -Force (Join-Path $PSScriptRoot "models.json") $Dist
+if ($Lite) {
+    Copy-Item -Force (Join-Path $PSScriptRoot "models-lite.json") (Join-Path $Dist "models.json")
+} else {
+    Copy-Item -Force (Join-Path $PSScriptRoot "models.json") $Dist
+}
 Copy-Item -Recurse -Force (Join-Path $Root "LICENSES") $LicDst
 
-Copy-Item -Force (Join-Path $PSScriptRoot "PORTABLE_README.txt") (Join-Path $Dist "PORTABLE-README.txt")
+$PortableReadme = if ($Lite) { "PORTABLE_README_LITE.txt" } else { "PORTABLE_README.txt" }
+Copy-Item -Force (Join-Path $PSScriptRoot $PortableReadme) (Join-Path $Dist "PORTABLE-README.txt")
 
 Write-Host "== done =="
 Write-Host $Dist

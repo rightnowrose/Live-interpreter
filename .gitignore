@@ -13,6 +13,7 @@ release/
 build/
 installer_log.txt
 build_log.txt
+*_log.txt
 temp_*.png
 temp_wheels/
 *.gguf

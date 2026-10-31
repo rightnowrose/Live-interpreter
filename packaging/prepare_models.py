@@ -23,10 +23,12 @@ def copy_tree(src: Path, dst: Path) -> None:
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("usage: prepare_models.py <dist/RoseSI>")
+    args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
+    lite = "--lite" in sys.argv[1:]
+    if len(args) != 1:
+        print("usage: prepare_models.py <dist/RoseSI> [--lite]")
         return 2
-    app_dir = Path(sys.argv[1]).resolve()
+    app_dir = Path(args[0]).resolve()
     if not (app_dir / "RoseSI.exe").is_file():
         print(f"not a built app dir: {app_dir}")
         return 2
@@ -36,6 +38,21 @@ def main() -> int:
     turbo = models / "large-v3-turbo"
     if turbo.exists():
         shutil.rmtree(turbo)
+
+    if lite:
+        for name in (paths.PARAKEET_MODEL, "HY-MT1.5-1.8B-GGUF"):
+            target = models / name
+            if target.exists():
+                shutil.rmtree(target)
+        cudnn = Path(paths.data_dir()) / "cudnn"
+        if cudnn.is_dir():
+            copy_tree(cudnn, app_dir / "cudnn")
+            dll_bytes = sum(p.stat().st_size for p in (app_dir / "cudnn").iterdir() if p.is_file())
+            print(f"copied cuDNN: {cudnn} -> {app_dir / 'cudnn'} ({dll_bytes:,} bytes)")
+        else:
+            print(f"warning: cuDNN folder not found: {cudnn}; Parakeet will fall back to CPU")
+        print(f"Lite build: no ASR/MT models bundled under {models}")
+        return 0
 
     parakeet = Path(paths.parakeet_dir())
     missing = [

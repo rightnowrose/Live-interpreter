@@ -33,6 +33,7 @@ from ...config import (
     ConfigStore,
 )
 from ..model_download import ModelDownloader
+from ..parakeet_download import ParakeetDownloader
 from ..widgets import Card, PageHeader, Switch, button
 from .common import ask_confirm
 
@@ -404,6 +405,68 @@ class SettingsPage(QWidget):
         folder.mkdir(parents=True, exist_ok=True)
         os.startfile(str(folder))
 
+    def _download_parakeet(self) -> None:
+        missing = paths.parakeet_missing()
+        if not missing:
+            self.notify.emit("Parakeet 模型已经就绪", "info")
+            self._refresh_asr_model_info()
+            return
+        size_gb = sum(paths.PARAKEET_FILES.values()) / (1024**3)
+        if not ask_confirm(
+            self,
+            "下载 Parakeet 模型",
+            f"需要下载约 {size_gb:.1f} GB 的 ONNX 模型文件，下载完成后即可离线识别。继续？",
+        ):
+            return
+        self.parakeet_download_btn.setEnabled(False)
+        dialog = QProgressDialog(
+            f"正在下载 Parakeet TDT 0.6B JA（{size_gb:.1f} GB）…", "取消", 0, 1000, self
+        )
+        dialog.setWindowTitle("下载 Parakeet 模型")
+        dialog.setWindowModality(Qt.WindowModal)
+        dialog.setMinimumDuration(0)
+        dialog.setAutoClose(False)
+        dialog.setAutoReset(False)
+        dialog.setValue(0)
+        worker = ParakeetDownloader(self)
+        self._parakeet_dialog = dialog
+        self._parakeet_worker = worker
+        worker.progress.connect(self._on_parakeet_progress)
+        worker.finished.connect(self._on_parakeet_finished)
+        worker.failed.connect(self._on_parakeet_failed)
+        dialog.canceled.connect(worker.cancel)
+        worker.start()
+
+    def _on_parakeet_progress(self, done: int, total: int) -> None:
+        dialog = getattr(self, "_parakeet_dialog", None)
+        if dialog is None:
+            return
+        if total > 0:
+            dialog.setMaximum(1000)
+            dialog.setValue(max(0, min(1000, int(done * 1000 / total))))
+            dialog.setLabelText(
+                f"正在下载 Parakeet 模型…  {done / 1024 / 1024:.0f} / "
+                f"{total / 1024 / 1024:.0f} MB"
+            )
+
+    def _on_parakeet_finished(self, folder: str) -> None:
+        dialog = getattr(self, "_parakeet_dialog", None)
+        if dialog is not None:
+            dialog.close()
+        self._parakeet_dialog = None
+        self._parakeet_worker = None
+        self._refresh_asr_model_info()
+        self.notify.emit("Parakeet 模型下载完成，回到「实时同传」即可开始", "success")
+
+    def _on_parakeet_failed(self, message: str) -> None:
+        dialog = getattr(self, "_parakeet_dialog", None)
+        if dialog is not None:
+            dialog.close()
+        self._parakeet_dialog = None
+        self._parakeet_worker = None
+        self._refresh_asr_model_info()
+        self.notify.emit(f"Parakeet 模型下载失败：{message}", "error")
+
     def _download_local_model(self) -> None:
         key = self.local_model.currentData()
         if not key:
@@ -498,7 +561,16 @@ class SettingsPage(QWidget):
         self.asr_model_info.setObjectName("Tiny")
         self.asr_model_info.setWordWrap(True)
         self.asr_model_info.setOpenExternalLinks(True)
-        card.add_widget(self._row("模型状态", self.asr_model_info))
+        status_row = QWidget()
+        status_layout = QHBoxLayout(status_row)
+        status_layout.setContentsMargins(0, 0, 0, 0)
+        status_layout.setSpacing(8)
+        status_layout.addWidget(self.asr_model_info, 1)
+        self.parakeet_download_btn = button("下载 Parakeet", "ghost")
+        self.parakeet_download_btn.clicked.connect(self._download_parakeet)
+        self.parakeet_download_btn.setVisible(False)
+        status_layout.addWidget(self.parakeet_download_btn, 0, Qt.AlignTop)
+        card.add_widget(self._row("模型状态", status_row))
         self.model_path = QLineEdit()
         self.model_path.setMinimumWidth(340)
         self.model_path.setPlaceholderText("留空自动查找 HuggingFace 缓存；也可填本地目录")
@@ -786,11 +858,13 @@ class SettingsPage(QWidget):
         self.initial_prompt.setEnabled(not is_parakeet)
         hint = paths.asr_model_hint(name)
         url = paths.asr_model_url(name)
+        self.parakeet_download_btn.setVisible(False)
         if is_parakeet:
             self.model_path.setPlaceholderText(
                 "留空使用 data/models/parakeet-tdt-0.6b-ja；也可指定 ONNX 模型目录"
             )
-            folder = Path(self.model_path.text().strip()) if self.model_path.text().strip() else paths.resolve_parakeet_dir()
+            custom = bool(self.model_path.text().strip())
+            folder = Path(self.model_path.text().strip()) if custom else paths.resolve_parakeet_dir()
             missing = [
                 filename
                 for filename, expected in paths.PARAKEET_FILES.items()
@@ -801,12 +875,18 @@ class SettingsPage(QWidget):
                 self.asr_model_info.setText(
                     f"<span style='color:#35c26b'>已就绪</span> · {folder}<br>{hint}"
                 )
+                self.parakeet_download_btn.setVisible(not custom)
+                self.parakeet_download_btn.setEnabled(False)
+                self.parakeet_download_btn.setText("已下载")
                 return
             link = f"<a href='{url}'>打开下载页</a>" if url else "未收录下载地址"
             names = "、".join(missing[:2]) + (" 等" if len(missing) > 2 else "")
             self.asr_model_info.setText(
                 f"<span style='color:#f0a020'>缺少 {len(missing)} 个文件</span>（{names}）· {link}<br>{hint}"
             )
+            self.parakeet_download_btn.setVisible(not custom)
+            self.parakeet_download_btn.setEnabled(True)
+            self.parakeet_download_btn.setText("下载模型")
             return
         self.model_path.setPlaceholderText("留空自动查找 HuggingFace 缓存；也可填本地目录")
         resolved = self.model_path.text().strip() or paths.resolve_asr_model(name)

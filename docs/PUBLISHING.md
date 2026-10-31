@@ -64,6 +64,20 @@ powershell -ExecutionPolicy Bypass -File packaging\build.ps1
 - 便携版目录：`dist/RoseSI/`
 - 安装包：`release/RoseSI-1.2.0-Setup.exe`
 
+### Lite 在线版（不内置模型）
+
+```powershell
+powershell -ExecutionPolicy Bypass -File packaging\build.ps1 -Lite
+& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DLite packaging\installer.iss
+```
+
+产物：
+
+- `dist/RoseSI/`（约 3.4 GB，无模型）
+- `release/RoseSI-1.2.0-Lite-Setup.exe`（约 1.2 GB，单文件，不需要拆分）
+
+Lite 版首次启动会在「设置 → 本地识别」提供 Parakeet 下载按钮，在「翻译服务」提供 HY-MT 下载按钮；模型保存在 `%LOCALAPPDATA%\LocalInterpreter\models`，不随安装目录删除。
+
 可以先自检：
 
 ```powershell
@@ -114,8 +128,9 @@ Get-FileHash -Algorithm SHA256 .\RoseSI-1.2.0-Setup.exe
 6. 在 **Attach binaries by dropping them here or selecting them** 区域上传：
    - `RoseSI-1.2.0-Setup.exe.part001`
    - `RoseSI-1.2.0-Setup.exe.part002`
-   - `SHA256.txt`
-   - 可选：`RELEASE_NOTES_v1.2.0.md`
+   - `RoseSI-1.2.0-Lite-Setup.exe`（Lite 单文件，不需要分卷）
+   - `SHA256.txt` / `SHA256-Lite.txt`
+   - 可选：`RELEASE_NOTES_v1.2.0.md`、`RELEASE_NOTES_v1.2.0-Lite.md`
 7. 点击 **Publish release**
 
 也可以先打 tag：
@@ -131,7 +146,9 @@ git push origin v1.2.0
 gh release create v1.2.0 `
   .\release\RoseSI-1.2.0-Setup.exe.part001 `
   .\release\RoseSI-1.2.0-Setup.exe.part002 `
+  .\release\RoseSI-1.2.0-Lite-Setup.exe `
   .\release\SHA256.txt `
+  .\release\SHA256-Lite.txt `
   --title "RoseSI 1.2.0" `
   --notes-file .\RELEASE_NOTES_v1.2.0.md
 ```

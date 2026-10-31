@@ -1,0 +1,26 @@
+{
+  "flavor": "lite",
+  "bundled": {
+    "asr": [],
+    "mt": []
+  },
+  "note": "Lite 在线版不内置模型。首次运行在「设置 → 本地识别」下载 Parakeet，在「翻译服务」下载 HY-MT1.5；也可使用 DeepSeek API 翻译。",
+  "downloads": {
+    "asr": {
+      "parakeet-tdt-0.6b-ja": "https://hf-mirror.com/visuall/parakeet-tdt_ctc-0.6b-ja-onnx/tree/main",
+      "large-v3-turbo": "https://hf-mirror.com/mobiuslabsgmbh/faster-whisper-large-v3-turbo/tree/main",
+      "large-v3": "https://hf-mirror.com/Systran/faster-whisper-large-v3/tree/main",
+      "medium": "https://hf-mirror.com/Systran/faster-whisper-medium/tree/main",
+      "small": "https://hf-mirror.com/Systran/faster-whisper-small/tree/main",
+      "base": "https://hf-mirror.com/Systran/faster-whisper-base/tree/main",
+      "tiny": "https://hf-mirror.com/Systran/faster-whisper-tiny/tree/main",
+      "kotoba-whisper-v2.0-faster": "https://hf-mirror.com/kotoba-tech/kotoba-whisper-v2.0-faster/tree/main",
+      "kotoba-whisper-bilingual-v1.0-faster": "https://hf-mirror.com/kotoba-tech/kotoba-whisper-bilingual-v1.0-faster/tree/main"
+    },
+    "mt": {
+      "hy-mt-1.8b-q4": "https://hf-mirror.com/tencent/HY-MT1.5-1.8B-GGUF/resolve/main/HY-MT1.5-1.8B-Q4_K_M.gguf",
+      "hy-mt-7b-q4": "https://hf-mirror.com/tencent/HY-MT1.5-7B-GGUF/resolve/main/HY-MT1.5-7B-Q4_K_M.gguf"
+    },
+    "deepseek_api": "https://platform.deepseek.com/api_keys"
+  }
+}

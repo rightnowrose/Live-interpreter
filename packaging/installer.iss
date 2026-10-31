@@ -2,21 +2,31 @@
 #define AppVersion "1.2.0"
 #define AppExe "RoseSI.exe"
 
+#ifdef Lite
+#define OutputSuffix "-Lite"
+#define InstallSuffix " Lite"
+#define AppIdValue "{{A2B4E6F8-1C3D-4E5F-8A9B-0C1D2E3F4A5B}"
+#else
+#define OutputSuffix ""
+#define InstallSuffix ""
+#define AppIdValue "{{7D6A0C3B-6D7E-4F62-9B7C-2C8F0B7A1E42}"
+#endif
+
 [Setup]
-AppId={{7D6A0C3B-6D7E-4F62-9B7C-2C8F0B7A1E42}
-AppName={#AppName}
+AppId={#AppIdValue}
+AppName={#AppName}{#InstallSuffix}
 AppVersion={#AppVersion}
-AppVerName={#AppName} {#AppVersion}
+AppVerName={#AppName} {#AppVersion}{#InstallSuffix}
 AppPublisher=RoseSI
-DefaultDirName={autopf}\RoseSI
-DefaultGroupName={#AppName}
+DefaultDirName={autopf}\RoseSI{#InstallSuffix}
+DefaultGroupName={#AppName}{#InstallSuffix}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\release
-OutputBaseFilename=RoseSI-{#AppVersion}-Setup
+OutputBaseFilename=RoseSI-{#AppVersion}{#OutputSuffix}-Setup
 SetupIconFile=app.ico
 UninstallDisplayIcon={app}\{#AppExe}
 Compression=lzma2/ultra64

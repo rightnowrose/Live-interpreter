@@ -35,21 +35,22 @@
 
 | 方式 | 适合 | 说明 |
 | --- | --- | --- |
-| **Windows 安装版** | 大多数用户 | 在 **Releases** 页面下载 `RoseSI-1.2.0-Setup.exe.part001`、`.part002`，全部下载后合并运行 |
+| **Windows 安装版（标准）** | 需要开箱即用 | 内置 Parakeet + HY-MT，约 3.41 GB；在 **Releases** 下载 `RoseSI-1.2.0-Setup.exe.part001`、`.part002` 后合并 |
+| **RoseSI Lite（在线版）** | 磁盘/下载空间有限 | 不内置模型，安装包约 1.2 GB；首次运行在设置里下载 Parakeet / HY-MT；下载 `RoseSI-1.2.0-Lite-Setup.exe` |
 | **便携版（可选）** | 不想安装 / 放 U 盘 | 首个 Release 先提供安装版；便携版可按 [打包](#打包与分发) 自行构建 |
 | **从源码运行** | 开发者 | 见[快速开始](#快速开始) |
 
-> GitHub 单个附件上限 2 GiB，所以安装包和便携版会拆成多个分卷。**必须下载全部分卷**，合并/解压后才能使用。
+> GitHub 单个附件上限 2 GiB，所以标准安装包会拆成多个分卷。**必须下载全部分卷**，合并后才能使用。
 >
 > 仓库本身只包含源码、文档和打包脚本；模型权重与安装包不提交进 Git。
 
-安装包合并（PowerShell / CMD）：
+标准版合并（PowerShell / CMD）：
 
 ```bat
 copy /b RoseSI-1.2.0-Setup.exe.part001 + RoseSI-1.2.0-Setup.exe.part002 RoseSI-1.2.0-Setup.exe
 ```
 
-合并后核对 `SHA256.txt`，再双击安装。
+Lite 版只有一个文件，不需要合并。合并/下载后核对对应的校验文件（标准版用 `SHA256.txt`，Lite 用 `SHA256-Lite.txt`），再双击安装。
 
 ## 功能
 
@@ -73,7 +74,7 @@ copy /b RoseSI-1.2.0-Setup.exe.part001 + RoseSI-1.2.0-Setup.exe.part002 RoseSI-1
 ### 1. 环境
 
 - Windows 10 2004+ / Windows 11，Python **3.10 x64**。
-- 安装版约 **5.6 GB** 磁盘空间（含 Parakeet、HY-MT、CUDA/cuDNN 运行时和 Qt）。
+- 安装版约 **5.6 GB** 磁盘空间（含 Parakeet、HY-MT、CUDA/cuDNN 运行时和 Qt）；Lite 在线版安装后约 **3.4 GB**，模型在首次使用时下载。
 - 可选 NVIDIA GPU（推荐）；CPU 也能跑，但 large-v3-turbo 在 CPU 上通常无法实时。Parakeet ONNX 需要 CUDA/cuDNN 才能达到直播延迟。
 - 不填 DeepSeek Key 也能用：翻译选「本地模型」即可；需要 AI 预审或云端翻译时再填。
 - 首次使用：
@@ -162,7 +163,8 @@ venv\Scripts\python.exe main.py
 
 模型目录（约 1.3 GB）：
 
-- **安装版/便携版**：已内置在 `安装目录\models\parakeet-tdt-0.6b-ja\`，开箱可用。
+- **安装版（标准）**：已内置在 `安装目录\models\parakeet-tdt-0.6b-ja\`，开箱可用。
+- **RoseSI Lite**：不内置；打开「设置 → 本地识别」，在模型状态旁点「下载模型」，约 1.2 GB；下载完成后即可离线识别。
 - **源码运行**：放在 `%LOCALAPPDATA%\LocalInterpreter\models\parakeet-tdt-0.6b-ja\`。
 
 ```text

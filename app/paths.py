@@ -195,6 +195,13 @@ def parakeet_missing() -> list[str]:
     ]
 
 
+def parakeet_download_url(filename: str) -> str:
+    """Parakeet ONNX 文件下载地址（默认走 hf-mirror）。"""
+    owner, repo = MODEL_REPOS[PARAKEET_MODEL]
+    endpoint = os.environ.get("HF_ENDPOINT", "https://hf-mirror.com").rstrip("/")
+    return f"{endpoint}/{owner}/{repo}/resolve/main/{filename}"
+
+
 def extension_dir() -> Path:
     """浏览器扩展目录（源码运行 / PyInstaller 打包都尽量找到）。"""
     candidates = [
