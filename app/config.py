@@ -79,7 +79,7 @@ class AudioSettings:
 
 @dataclass
 class ASRSettings:
-    model: str = "large-v3-turbo"
+    model: str = "parakeet-tdt-0.6b-ja"
     model_path: str = ""
     device: str = "auto"  # auto | cuda | cpu
     compute_type: str = "auto"  # auto | float16 | int8_float16 | int8 | float32

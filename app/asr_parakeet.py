@@ -21,7 +21,10 @@ def _add_cuda_dll_dirs() -> None:
     """给 onnxruntime-gpu 找到 cuDNN/CUDA 运行时（Windows）。"""
     from . import paths
 
-    candidates: list[Path] = [paths.data_dir() / "cudnn"]
+    candidates: list[Path] = [
+        paths.bundle_root() / "cudnn",
+        paths.data_dir() / "cudnn",
+    ]
     cuda_path = os.environ.get("CUDA_PATH", "")
     if cuda_path:
         candidates.append(Path(cuda_path) / "bin")

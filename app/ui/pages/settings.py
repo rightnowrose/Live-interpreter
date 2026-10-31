@@ -790,7 +790,7 @@ class SettingsPage(QWidget):
             self.model_path.setPlaceholderText(
                 "留空使用 data/models/parakeet-tdt-0.6b-ja；也可指定 ONNX 模型目录"
             )
-            folder = Path(self.model_path.text().strip()) if self.model_path.text().strip() else paths.parakeet_dir()
+            folder = Path(self.model_path.text().strip()) if self.model_path.text().strip() else paths.resolve_parakeet_dir()
             missing = [
                 filename
                 for filename, expected in paths.PARAKEET_FILES.items()
@@ -967,7 +967,7 @@ class SettingsPage(QWidget):
         s.asr.model = self.asr_model.currentData() or "large-v3-turbo"
         s.asr.model_path = self.model_path.text().strip()
         if s.asr.model == paths.PARAKEET_MODEL:
-            folder = Path(s.asr.model_path) if s.asr.model_path else paths.parakeet_dir()
+            folder = Path(s.asr.model_path) if s.asr.model_path else paths.resolve_parakeet_dir()
             missing = [
                 filename
                 for filename, expected in paths.PARAKEET_FILES.items()

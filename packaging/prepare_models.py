@@ -33,12 +33,22 @@ def main() -> int:
     models = app_dir / "models"
     models.mkdir(parents=True, exist_ok=True)
 
-    turbo = Path(paths.resolve_asr_model("large-v3-turbo"))
-    if not (turbo / "model.bin").is_file():
-        print(f"large-v3-turbo not found: {turbo}")
+    turbo = models / "large-v3-turbo"
+    if turbo.exists():
+        shutil.rmtree(turbo)
+
+    parakeet = Path(paths.parakeet_dir())
+    missing = [
+        name
+        for name, expected in paths.PARAKEET_FILES.items()
+        if not (parakeet / name).is_file()
+        or (parakeet / name).stat().st_size < int(expected * paths.PARAKEET_MIN_BYTES)
+    ]
+    if missing:
+        print(f"Parakeet model incomplete at {parakeet}: {', '.join(missing)}")
         return 3
-    copy_tree(turbo, models / "large-v3-turbo")
-    print(f"copied ASR: {turbo} -> {models / 'large-v3-turbo'}")
+    copy_tree(parakeet, models / paths.PARAKEET_MODEL)
+    print(f"copied ASR: {parakeet} -> {models / paths.PARAKEET_MODEL}")
 
     mt = Path(paths.resolve_local_mt_model("hy-mt-1.8b-q4"))
     if not mt.is_file():
@@ -49,8 +59,17 @@ def main() -> int:
     shutil.copy2(mt, mt_dst)
     print(f"copied MT:  {mt} -> {mt_dst}")
 
-    expected_turbo = models / "large-v3-turbo" / "model.bin"
-    print(f"ASR model.bin: {expected_turbo.stat().st_size:,} bytes")
+    cudnn = Path(paths.data_dir()) / "cudnn"
+    if cudnn.is_dir():
+        copy_tree(cudnn, app_dir / "cudnn")
+        dll_bytes = sum(p.stat().st_size for p in (app_dir / "cudnn").iterdir() if p.is_file())
+        print(f"copied cuDNN: {cudnn} -> {app_dir / 'cudnn'} ({dll_bytes:,} bytes)")
+    else:
+        print(f"warning: cuDNN folder not found: {cudnn}; Parakeet will fall back to CPU")
+
+    parakeet_files = models / paths.PARAKEET_MODEL
+    parakeet_bytes = sum(p.stat().st_size for p in parakeet_files.iterdir() if p.is_file())
+    print(f"Parakeet total: {parakeet_bytes:,} bytes")
     print(f"MT GGUF:       {mt_dst.stat().st_size:,} bytes")
     return 0
 

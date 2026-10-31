@@ -2,11 +2,11 @@
   "bundled": {
     "asr": [
       {
-        "key": "large-v3-turbo",
-        "label": "faster-whisper large-v3-turbo",
+        "key": "parakeet-tdt-0.6b-ja",
+        "label": "Parakeet TDT 0.6B JA",
         "kind": "asr",
-        "path": "models/large-v3-turbo",
-        "note": "随安装包内置，开箱即用"
+        "path": "models/parakeet-tdt-0.6b-ja",
+        "note": "随安装包内置，直播首选"
       }
     ],
     "mt": [

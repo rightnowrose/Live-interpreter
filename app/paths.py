@@ -102,11 +102,11 @@ def asr_model_url(name: str) -> str:
 
 def asr_model_hint(name: str) -> str:
     if name == PARAKEET_MODEL:
-        return "直播首选：日语句级识别 + 低延迟；首次需下载约 1.3 GB ONNX 模型"
+        return "直播首选：日语句级识别 + 低延迟；发行版内置，可直接使用"
     if name.startswith("kotoba-whisper"):
         return "日语/中日双语优化模型，需完整模型目录"
     if name == "large-v3-turbo":
-        return "推荐：速度快、精度高，已随安装包内置"
+        return "速度快、精度高；发行版未内置，可在模型入口直接下载"
     if name == "large-v3":
         return "精度最高，但显存和速度开销更大"
     if name in ("medium", "small", "base", "tiny"):
@@ -153,11 +153,16 @@ def models_dir() -> Path:
 
 
 def parakeet_dir() -> Path:
+    """用户可写模型目录（下载/自定义安装）。"""
     return models_dir() / PARAKEET_MODEL
 
 
-def parakeet_ready() -> bool:
-    folder = parakeet_dir()
+def bundled_parakeet_dir() -> Path:
+    """安装包内置的只读 Parakeet 目录。"""
+    return bundled_models_dir() / PARAKEET_MODEL
+
+
+def _parakeet_folder_ready(folder: Path) -> bool:
     for name, expected in PARAKEET_FILES.items():
         file = folder / name
         if not file.is_file() or file.stat().st_size < int(expected * PARAKEET_MIN_BYTES):
@@ -165,8 +170,23 @@ def parakeet_ready() -> bool:
     return True
 
 
+def resolve_parakeet_dir() -> Path:
+    """优先用户目录，其次安装包内置目录。"""
+    local = parakeet_dir()
+    if _parakeet_folder_ready(local):
+        return local
+    bundled = bundled_parakeet_dir()
+    if _parakeet_folder_ready(bundled):
+        return bundled
+    return local
+
+
+def parakeet_ready() -> bool:
+    return _parakeet_folder_ready(resolve_parakeet_dir())
+
+
 def parakeet_missing() -> list[str]:
-    folder = parakeet_dir()
+    folder = resolve_parakeet_dir()
     return [
         name
         for name, expected in PARAKEET_FILES.items()

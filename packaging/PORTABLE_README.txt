@@ -2,8 +2,9 @@ RoseSI 1.2.0（便携版）
 
 1. 双击 RoseSI.exe 即可运行，无需安装 Python。
 2. 已内置：
-   - faster-whisper large-v3-turbo（语音识别）
+   - Parakeet TDT 0.6B JA（ONNX，日语直播首选）
    - HY-MT1.5-1.8B Q4_K_M（离线翻译）
+   Whisper large-v3-turbo 等其他模型不在包内，可在设置中直接下载或查看 models.json。
 3. 首次启动在「工作台 → 设置」选择：
    - 翻译方式：本地模型（离线，HY-MT1.5）——无需 API Key
    - 或 DeepSeek API——需要填写你自己的 API Key

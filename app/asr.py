@@ -18,7 +18,7 @@ import numpy as np
 
 from .config import ASRSettings, whisper_language
 from .models import new_id
-from .paths import PARAKEET_MODEL, parakeet_dir, parakeet_ready, resolve_asr_model
+from .paths import PARAKEET_MODEL, parakeet_ready, resolve_parakeet_dir, resolve_asr_model
 
 log = logging.getLogger(__name__)
 
@@ -316,7 +316,7 @@ class ASREngine:
         from .asr_parakeet import ParakeetRecognizer
 
         custom = Path(self.settings.model_path) if self.settings.model_path else None
-        folder = custom if custom and custom.is_dir() else parakeet_dir()
+        folder = custom if custom and custom.is_dir() else resolve_parakeet_dir()
         self.resolved_path = str(folder)
         if custom is None and not parakeet_ready():
             missing = "、".join(self._parakeet_missing())

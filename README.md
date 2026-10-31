@@ -1,6 +1,10 @@
 # RoseSI · 本地实时同传
 
-把浏览器/系统里正在播放的声音，用**本地 Parakeet / Whisper** 识别，再用 **DeepSeek API 或本地 HY-MT1.5 模型**流式翻译，以常驻字幕窗 + 独立工作台的形式呈现。
+> Windows 桌面端的日语实时字幕 / 同传工具：本地 ASR + 本地或云端翻译 + 术语库 / 语料库。
+
+适合看日语直播、Vtuber、会议、生肉视频，也适合日语学习和复盘。不是网页，而是常驻置顶的原生字幕窗 + 独立工作台。
+
+**当前版本：1.2.0** · Windows 10/11 x64 · 代码 MIT
 
 - 不是网页：PySide6 原生桌面窗口。
 - 字幕窗常驻置顶，可拖动移动、拖动四边/四角调整大小、可鼠标穿透；点「工作台」打开完整功能窗口。
@@ -10,12 +14,45 @@
 
 ![工作台](docs/screenshots/workbench_dashboard.png)
 
+## 目录
+
+- [下载](#下载)
+- [功能](#功能)
+- [快速开始](#快速开始)
+- [音频源怎么选](#音频源怎么选)
+- [字幕窗与五十音图](#调整字幕窗大小)
+- [工作台](#工作台)
+- [术语库与语料库](#术语库与语料库延迟设计)
+- [延迟预算](#延迟预算参考)
+- [快捷键](#快捷键)
+- [数据与隐私](#数据与隐私)
+- [常见问题](#常见问题)
+- [开发与测试](#开发与测试)
+- [打包与分发](#打包与分发)
+- [许可证](#许可证)
+
 ## 下载
 
-- **安装版 / 便携版**：见本仓库的 **Releases** 页面。
-- 仓库本身只包含源码、文档和打包脚本；模型权重与安装包不提交进 Git。
+| 方式 | 适合 | 说明 |
+| --- | --- | --- |
+| **Windows 安装版** | 大多数用户 | 在 **Releases** 页面下载 `RoseSI-1.2.0-Setup.exe.part001`、`.part002`，全部下载后合并运行 |
+| **便携版** | 不想安装 / 放 U 盘 | 在 Releases 下载便携版分卷，解压后双击 `RoseSI.exe` |
+| **从源码运行** | 开发者 | 见[快速开始](#快速开始) |
+
+> GitHub 单个附件上限 2 GiB，所以安装包和便携版会拆成多个分卷。**必须下载全部分卷**，合并/解压后才能使用。
+>
+> 仓库本身只包含源码、文档和打包脚本；模型权重与安装包不提交进 Git。
+
+安装包合并（PowerShell / CMD）：
+
+```bat
+copy /b RoseSI-1.2.0-Setup.exe.part001 + RoseSI-1.2.0-Setup.exe.part002 RoseSI-1.2.0-Setup.exe
+```
+
+合并后核对 `SHA256.txt`，再双击安装。
 
 ## 功能
+
 
 | 模块 | 说明 |
 | --- | --- |
@@ -36,7 +73,9 @@
 ### 1. 环境
 
 - Windows 10 2004+ / Windows 11，Python **3.10 x64**。
-- 可选 NVIDIA GPU（推荐）；CPU 也能跑，但 large-v3-turbo 在 CPU 上通常无法实时。
+- 安装版约 **5 GB** 磁盘空间（含 Parakeet、HY-MT、CUDA 运行时和 Qt）。
+- 可选 NVIDIA GPU（推荐）；CPU 也能跑，但 large-v3-turbo 在 CPU 上通常无法实时。Parakeet ONNX 需要 CUDA/cuDNN 才能达到直播延迟。
+- 不填 DeepSeek Key 也能用：翻译选「本地模型」即可；需要 AI 预审或云端翻译时再填。
 - 首次使用：
 
 ```bat
@@ -49,6 +88,18 @@ setup.bat
 py -3.10 -m venv venv
 venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
+
+可选组件（不影响只使用 DeepSeek 的基础功能）：
+
+```bat
+REM 本地 HY-MT 翻译
+venv\Scripts\python.exe -m pip install -r requirements-local.txt
+
+REM Parakeet ONNX（CUDA）
+venv\Scripts\python.exe -m pip install -r requirements-parakeet.txt
+```
+
+源码运行时模型需要单独下载：见 [3. 模型](#3-模型) 或 `packaging/models.json`；安装版已内置 Parakeet + HY-MT。
 
 ### 2. 启动
 
@@ -111,21 +162,26 @@ venv\Scripts\python.exe main.py
 
 模型目录（约 1.3 GB）：
 
+- **安装版/便携版**：已内置在 `安装目录\models\parakeet-tdt-0.6b-ja\`，开箱可用。
+- **源码运行**：放在 `%LOCALAPPDATA%\LocalInterpreter\models\parakeet-tdt-0.6b-ja\`。
+
 ```text
-%LOCALAPPDATA%\LocalInterpreter\models\parakeet-tdt-0.6b-ja\
+models\parakeet-tdt-0.6b-ja\
   encoder-model.fp16.onnx
   decoder_joint-model.fp16.onnx
   nemo80.onnx
   vocab.txt
 ```
 
-已有模型时可在「设置 → 语音识别 → 模型」选 `parakeet-tdt-0.6b-ja`；没有时运行：
+源码运行时若没有模型，执行：
 
 ```bat
 venv\Scripts\python.exe tools\download_parakeet.py
 ```
 
-运行需要 `onnxruntime-gpu`（CUDA 12 + cuDNN 9）。本机已把 cuDNN 放在：
+然后在「设置 → 语音识别 → 模型」选 `parakeet-tdt-0.6b-ja`。
+
+运行需要 `onnxruntime-gpu`（CUDA 12 + cuDNN 9）。**安装版已内置 cuDNN 9**，无需额外配置；源码运行时，本机把 cuDNN 放在：
 
 ```text
 %LOCALAPPDATA%\LocalInterpreter\cudnn\
@@ -139,15 +195,15 @@ Parakeet 的原始输出不带可靠标点，程序做了三层处理：VAD 只�
 
 断句不是一到静音就立刻切：静音 350 ms 只是候选点，如果草稿还停在「て / で / が / を / から / けど …」这类非句末形式，会再等一小段（最多约 1.2 s）等句子收尾；遇到「です / ます / ました / ください / ね / よ …」则立即定稿。这样减少把一句话切成两段、再让翻译模型补半句的情况。
 
-#### 3.2 faster-whisper（通用/备用）
+#### 3.2 faster-whisper（通用/备用，发行版未内置）
 
-默认 `large-v3-turbo`。程序会先查找：
+`large-v3-turbo` 不再打进发行包，但保留入口和下载方式；在「设置 → 语音识别」中选择后，程序会先查找：
 
 ```
 %USERPROFILE%\.cache\huggingface\hub\models--mobiuslabsgmbh--faster-whisper-large-v3-turbo
 ```
 
-默认本机已有该模型（约 1.6 GB）。换机器/没有缓存时，faster-whisper 会自动下载；国内网络可先设：
+本机开发缓存中已有该模型（约 1.6 GB）；发行包不内置。换机器/没有缓存时，faster-whisper 会自动下载；国内网络可先设：
 
 ```bat
 set HF_ENDPOINT=https://hf-mirror.com
@@ -406,10 +462,10 @@ main.py              入口
 
 两种形式都内置：
 
-- `models/large-v3-turbo/`：faster-whisper 语音识别模型；
+- `models/parakeet-tdt-0.6b-ja/`：Parakeet TDT 0.6B JA（ONNX，日语直播首选）；
 - `models/HY-MT1.5-1.8B-GGUF/HY-MT1.5-1.8B-Q4_K_M.gguf`：本地日→中翻译模型。
 
-其他模型不随包分发，但保留入口和下载地址：`packaging/models.json` 列出全部 ASR / MT 的下载页；在「设置 → 语音识别 / 翻译服务」里也可以直接切换或下载。程序运行后模型和会话数据写入 `%LOCALAPPDATA%\LocalInterpreter`，安装目录只读即可。
+Whisper large-v3-turbo 不再打进安装包，但保留入口和下载地址：`packaging/models.json` 列出全部 ASR / MT 的下载页；在「设置 → 语音识别 / 翻译服务」里也可以直接切换或下载。程序运行后模型和会话数据写入 `%LOCALAPPDATA%\LocalInterpreter`，安装目录只读即可。
 
 重新构建：
 

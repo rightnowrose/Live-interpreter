@@ -300,6 +300,7 @@ def _prepare_frozen_dlls() -> None:
     if not getattr(sys, "frozen", False):
         return
     roots = [Path(sys.executable).resolve().parent]
+    roots.append(roots[0] / "cudnn")
     meipass = getattr(sys, "_MEIPASS", "")
     if meipass:
         root = Path(meipass)
@@ -328,12 +329,12 @@ def package_check() -> int:
     except Exception as exc:
         result["api_key_empty_by_default"] = f"error: {exc}"
     try:
-        asr = paths.resolve_asr_model("large-v3-turbo")
-        result["asr_turbo"] = asr
-        result["asr_turbo_ok"] = (Path(asr) / "model.bin").is_file()
+        parakeet = paths.resolve_parakeet_dir()
+        result["asr_parakeet"] = str(parakeet)
+        result["asr_parakeet_ok"] = paths.parakeet_ready()
     except Exception as exc:
-        result["asr_turbo_ok"] = False
-        result["asr_turbo_error"] = str(exc)
+        result["asr_parakeet_ok"] = False
+        result["asr_parakeet_error"] = str(exc)
     try:
         local = paths.resolve_local_mt_model("hy-mt-1.8b-q4")
         result["local_mt"] = local
@@ -355,6 +356,7 @@ def package_check() -> int:
         result["llama_gpu_offload"] = f"error: {exc}"
     out = paths.data_dir() / "package_check.json"
     try:
+        out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     except OSError:
         pass
@@ -362,7 +364,7 @@ def package_check() -> int:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     except Exception:
         pass
-    ok = bool(result.get("asr_turbo_ok")) and bool(result.get("local_mt_ok"))
+    ok = bool(result.get("asr_parakeet_ok")) and bool(result.get("local_mt_ok"))
     return 0 if ok else 1
 
 

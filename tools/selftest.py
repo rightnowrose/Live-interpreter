@@ -30,7 +30,7 @@ def check(condition, message: str) -> None:
 
 def main() -> None:
     config = ConfigStore()
-    check(config.settings.asr.model == "large-v3-turbo", "默认配置")
+    check(config.settings.asr.model == "parakeet-tdt-0.6b-ja", "默认配置")
     check(
         config.settings.translate.model == "deepseek-flash"
         and not config.settings.translate.thinking,
