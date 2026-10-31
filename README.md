@@ -14,6 +14,8 @@
 
 ![工作台](docs/screenshots/workbench_dashboard.png)
 
+> 新手建议直接阅读 [RoseSI 用户手册（Word）](docs/RoseSI-User-Manual.docx)；下面保留完整的 Markdown 说明，方便在 GitHub 上搜索和更新。
+
 ## 目录
 
 - [下载](#下载)
@@ -37,7 +39,7 @@
 | --- | --- | --- |
 | **Windows 安装版（标准）** | 需要开箱即用 | 内置 Parakeet + HY-MT，约 3.41 GB；在 **Releases** 下载 `RoseSI-1.2.0-Setup.exe.part001`、`.part002` 后合并 |
 | **RoseSI Lite（在线版）** | 磁盘/下载空间有限 | 不内置模型，安装包约 1.2 GB；首次运行在设置里下载 Parakeet / HY-MT；下载 `RoseSI-1.2.0-Lite-Setup.exe` |
-| **便携版（可选）** | 不想安装 / 放 U 盘 | 首个 Release 先提供安装版；便携版可按 [打包](#打包与分发) 自行构建 |
+| **便携版（解压版）** | 不想安装 / 放 U 盘 | 当前 Release **暂未上传**独立解压包；可在本地用 `build.ps1` 生成 `dist/RoseSI`。标准构建含模型（约 5.6 GB），Lite 构建不含模型（约 3.4 GB） |
 | **从源码运行** | 开发者 | 见[快速开始](#快速开始) |
 
 > GitHub 单个附件上限 2 GiB，所以标准安装包会拆成多个分卷。**必须下载全部分卷**，合并后才能使用。
@@ -51,6 +53,8 @@ copy /b RoseSI-1.2.0-Setup.exe.part001 + RoseSI-1.2.0-Setup.exe.part002 RoseSI-1
 ```
 
 Lite 版只有一个文件，不需要合并。合并/下载后核对对应的校验文件（标准版用 `SHA256.txt`，Lite 用 `SHA256-Lite.txt`），再双击安装。
+
+> **关于解压版**：当前 GitHub Release 只有标准安装版和 Lite 安装版，没有独立的解压包。标准安装版是“按用户安装”，不要求管理员权限；如果确实需要免安装目录，可以按[打包与分发](#打包与分发)在本地生成 `dist/RoseSI`，再把整个目录打包分发。
 
 ## 功能
 
@@ -70,6 +74,19 @@ Lite 版只有一个文件，不需要合并。合并/下载后核对对应的�
 | 系统集成 | 托盘、全局热键、单实例、深色标题栏、日志 |
 
 ## 快速开始
+
+### 安装版用户（推荐）
+
+1. 在 **Releases** 下载标准版两个分卷（或 Lite 单文件）。
+2. 标准版先合并并核对 `SHA256.txt`；Lite 核对 `SHA256-Lite.txt`。
+3. 双击安装包，按向导安装；默认按当前用户安装，不需要管理员权限。
+4. 首次启动后进入「设置」：
+   - **翻译方式**：选 DeepSeek 并填自己的 API Key；或选「本地模型」并下载 HY-MT（无需 Key）。
+   - **音频源**：选浏览器/播放器实际使用的输出设备；只想抓一个标签页时用「浏览器标签页（扩展）」。
+   - **目标语言**：简体中文。
+5. 点「保存并应用」，再点字幕窗的「开始」或按 `Ctrl+Shift+S`。
+
+> 标准版已内置 Parakeet + HY-MT；Lite 首次使用需在「设置 → 本地识别」和「翻译服务 → 本地模型」里分别下载模型，约 1.2 GB + 1.1 GB。
 
 ### 1. 环境
 
@@ -100,7 +117,7 @@ REM Parakeet ONNX（CUDA）
 venv\Scripts\python.exe -m pip install -r requirements-parakeet.txt
 ```
 
-源码运行时模型需要单独下载：见 [3. 模型](#3-模型) 或 `packaging/models.json`；安装版已内置 Parakeet + HY-MT。
+源码运行时模型需要单独下载：见 [3. 模型](#3-模型) 或 `packaging/models.json`；标准安装版已内置 Parakeet + HY-MT，Lite 版需要首次下载。
 
 ### 2. 启动
 
@@ -455,30 +472,39 @@ main.py              入口
 
 ## 打包与分发
 
-已经生成两种可直接分发的形式：
+发布构建有两套配方：
 
-- `dist/RoseSI/`：便携版目录，双击 `RoseSI.exe` 即可运行，无需安装 Python。
-- `release/RoseSI-1.2.0-Setup.exe`：Windows 安装包（Inno Setup），按用户安装，不要求管理员权限。
+| 配方 | 是否内置模型 | 安装包 | 安装后 | 输出 |
+| --- | --- | --- | --- | --- |
+| 标准版 | 是（Parakeet + HY-MT） | 约 3.41 GB，拆两卷 | 约 5.6 GB | `release/RoseSI-1.2.0-Setup.exe` |
+| Lite 在线版 | 否 | 约 1.14 GB | 约 3.4 GB | `release/RoseSI-1.2.0-Lite-Setup.exe` |
 
-> `release/RoseSI-1.2.0-Setup.exe` 由下面的命令生成；如果修改了代码或模型，请重新构建，不要直接复用旧包。
+`dist/RoseSI/` 是 PyInstaller 便携目录，双击 `RoseSI.exe` 即可运行，无需安装 Python。**`dist/RoseSI` 的内容取决于最后一次构建**：标准构建含两个模型，Lite 构建不含；不要把 Lite 目录当成标准版分发。
 
-两种形式都内置：
+标准版构建会复制：
 
 - `models/parakeet-tdt-0.6b-ja/`：Parakeet TDT 0.6B JA（ONNX，日语直播首选）；
 - `models/HY-MT1.5-1.8B-GGUF/HY-MT1.5-1.8B-Q4_K_M.gguf`：本地日→中翻译模型。
 
 Whisper large-v3-turbo 不再打进安装包，但保留入口和下载地址：`packaging/models.json` 列出全部 ASR / MT 的下载页；在「设置 → 语音识别 / 翻译服务」里也可以直接切换或下载。程序运行后模型和会话数据写入 `%LOCALAPPDATA%\LocalInterpreter`，安装目录只读即可。
 
-重新构建：
+重新构建标准版：
 
 ```bat
 powershell -ExecutionPolicy Bypass -File packaging\build.ps1
 "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" packaging\installer.iss
 ```
 
-`build.ps1` 会先跑 PyInstaller，再把两个模型复制到 `dist/RoseSI/models`；`installer.iss` 生成安装包到 `release`。打包版可通过 `RoseSI.exe --package-check` 输出自检 JSON（模型路径、运行时、API Key 是否为空等）。数据目录沿用 `%LOCALAPPDATA%\LocalInterpreter`，避免升级时丢失已有配置和模型。
+重新构建 Lite 在线版：
 
-> 安装包和便携版不包含任何 DeepSeek API Key。首次启动时 `api_key_enc` 为空；用户需要在设置里填写自己的 Key，Key 只保存在本机 DPAPI 中。
+```bat
+powershell -ExecutionPolicy Bypass -File packaging\build.ps1 -Lite
+"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DLite packaging\installer.iss
+```
+
+`build.ps1` 会先跑 PyInstaller，再按配方复制模型；`installer.iss` 生成安装包到 `release`。打包版可通过 `RoseSI.exe --package-check` 输出自检 JSON（模型路径、运行时、API Key 是否为空等）。数据目录沿用 `%LOCALAPPDATA%\LocalInterpreter`，避免升级时丢失已有配置和模型。
+
+> 标准版、Lite、便携目录都不包含任何 DeepSeek API Key。首次启动时 `api_key_enc` 为空；用户需要在设置里填写自己的 Key，Key 只保存在本机 DPAPI 中。
 
 ## 已知限制
 
@@ -487,7 +513,7 @@ powershell -ExecutionPolicy Bypass -File packaging\build.ps1
 - 翻译按句提交，不是逐词同传；静音断句决定了下限延迟。
 - 首次加载 CUDA 模型约 3–6 秒；模型常驻后再次开始会快很多。
 - 本地 HY-MT1.5 需要 `llama-cpp-python` 和 GGUF 模型；不装也能用 DeepSeek，不影响原有功能。
-- 打包版约 5.6 GB（含 Parakeet、HY-MT、cuDNN、CUDA 运行时和 Qt）；安装包 3.41 GB，拆成两个 1.9 GB 以内的分卷。单文件（onefile）启动时会解压数 GB，不推荐。
+- 标准版安装包约 3.41 GB（拆两卷），安装后约 5.6 GB（含 Parakeet、HY-MT、cuDNN、CUDA 运行时和 Qt）；Lite 安装包约 1.14 GB，安装后约 3.4 GB，模型首次使用时下载。单文件（onefile）启动时会解压数 GB，不推荐。
 
 ## 许可证
 
