@@ -1,0 +1,18 @@
+RoseSI 1.2.0
+
+安装包已经内置：
+  - faster-whisper large-v3-turbo 语音识别模型
+  - Tencent HY-MT1.5-1.8B Q4_K_M 本地翻译模型
+
+安装完成后可直接离线识别和翻译，不需要 Python，也不需要 API Key。
+
+DeepSeek API Key 不在安装包内。需要使用云端翻译时，请在
+「工作台 → 设置 → 翻译服务」填写你自己的 Key。
+
+本程序的数据保存在：
+  %LOCALAPPDATA%\LocalInterpreter
+
+安装目录只放程序、模型和扩展，不会写入你的 API Key。
+
+注意：HY-MT1.5 使用 Tencent HY Community License，不适用于欧盟、英国和韩国；
+许可全文见安装目录 LICENSES\HY-MT1.5-License.txt。

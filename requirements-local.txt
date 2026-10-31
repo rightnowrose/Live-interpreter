@@ -1,0 +1,6 @@
+# 可选：本地 HY-MT1.5 翻译所需的推理运行时（Windows CUDA 12 预编译 wheel）
+# 用法：venv\Scripts\python.exe -m pip install -r requirements-local.txt
+# 没有 NVIDIA GPU 时，改用：
+#   venv\Scripts\python.exe -m pip install llama-cpp-python==0.3.36
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
+llama-cpp-python==0.3.36

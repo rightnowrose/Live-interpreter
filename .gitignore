@@ -1,0 +1,25 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+testdata*/
+*.log
+.idea/
+.pytest_cache/
+
+# 构建产物、安装包和临时文件：不要提交；用 GitHub Releases 分发
+dist/
+release/
+build/
+installer_log.txt
+build_log.txt
+temp_*.png
+temp_wheels/
+*.gguf
+*.onnx
+*.whl
+packaging/innosetup.exe
+
+# 打包/模型缓存
+models/
+.env
