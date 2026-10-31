@@ -6,7 +6,7 @@
 
 **当前版本：1.2.0** · Windows 10/11 x64 · 代码 MIT
 
-**作者：无媒介蔷薇** · GitHub：[@rightnowrose](https://github.com/rightnowrose) · Bilibili：[空间主页](https://space.bilibili.com/3747570723589225/dynamic)
+**作者：天星微垂（无媒介蔷薇）** · GitHub：[@rightnowrose](https://github.com/rightnowrose) · Bilibili：（无媒介蔷薇）[space.bilibili.com/3747570723589225](https://space.bilibili.com/3747570723589225/dynamic)
 
 - 不是网页：PySide6 原生桌面窗口。
 - 字幕窗常驻置顶，可拖动移动、拖动四边/四角调整大小、可鼠标穿透；点「工作台」打开完整功能窗口。
@@ -16,7 +16,7 @@
 
 ![工作台](docs/screenshots/workbench_dashboard.png)
 
-> 新手建议直接阅读 [RoseSI 用户手册（Word）](docs/RoseSI-User-Manual.docx)；下面保留完整的 Markdown 说明，方便在 GitHub 上搜索和更新。
+> 新手建议直接阅读 [RoseSI 用户手册（Word）](docs/RoseSI-User-Manual.docx) 或 [PDF 版](docs/RoseSI-User-Manual.pdf)；下面保留完整的 Markdown 说明，方便在 GitHub 上搜索和更新。
 
 ## 目录
 
@@ -521,9 +521,9 @@ powershell -ExecutionPolicy Bypass -File packaging\build.ps1 -Lite
 
 本项目代码采用 **MIT License**，见 [LICENSE](LICENSE)。
 
-Copyright © 2026 无媒介蔷薇（RoseSI contributors）。
+Copyright © 2026 天星微垂（无媒介蔷薇）（RoseSI contributors）。
 
-作者：**无媒介蔷薇** · GitHub：[@rightnowrose](https://github.com/rightnowrose) · Bilibili：[space.bilibili.com/3747570723589225](https://space.bilibili.com/3747570723589225/dynamic)
+作者：**天星微垂（无媒介蔷薇）** · GitHub：[@rightnowrose](https://github.com/rightnowrose) · Bilibili：（无媒介蔷薇）[space.bilibili.com/3747570723589225](https://space.bilibili.com/3747570723589225/dynamic)
 
 模型权重和第三方运行时不在 MIT 授权范围内：
 

@@ -788,7 +788,7 @@ class SettingsPage(QWidget):
         open_logs = button("查看日志", "ghost")
         open_logs.clicked.connect(lambda: os.startfile(paths.logs_dir() / "app.log"))
         card.add_widget(self._row("诊断日志", open_logs))
-        author = QLabel("无媒介蔷薇")
+        author = QLabel("天星微垂（无媒介蔷薇）")
         author.setObjectName("Dim")
         author.setTextInteractionFlags(Qt.TextSelectableByMouse)
         card.add_widget(self._row("作者", author))
@@ -804,7 +804,7 @@ class SettingsPage(QWidget):
         bilibili.setTextFormat(Qt.RichText)
         bilibili.setOpenExternalLinks(True)
         bilibili.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        card.add_widget(self._row("Bilibili", bilibili))
+        card.add_widget(self._row("Bilibili（无媒介蔷薇）", bilibili))
         about = QLabel(
             "RoseSI · 本地实时同传\n"
             "ASR: Parakeet / faster-whisper（本地 GPU） · 翻译: DeepSeek / 本地 HY-MT\n"
