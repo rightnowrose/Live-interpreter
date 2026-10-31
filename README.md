@@ -36,7 +36,7 @@
 | 方式 | 适合 | 说明 |
 | --- | --- | --- |
 | **Windows 安装版** | 大多数用户 | 在 **Releases** 页面下载 `RoseSI-1.2.0-Setup.exe.part001`、`.part002`，全部下载后合并运行 |
-| **便携版** | 不想安装 / 放 U 盘 | 在 Releases 下载便携版分卷，解压后双击 `RoseSI.exe` |
+| **便携版（可选）** | 不想安装 / 放 U 盘 | 首个 Release 先提供安装版；便携版可按 [打包](#打包与分发) 自行构建 |
 | **从源码运行** | 开发者 | 见[快速开始](#快速开始) |
 
 > GitHub 单个附件上限 2 GiB，所以安装包和便携版会拆成多个分卷。**必须下载全部分卷**，合并/解压后才能使用。
@@ -73,7 +73,7 @@ copy /b RoseSI-1.2.0-Setup.exe.part001 + RoseSI-1.2.0-Setup.exe.part002 RoseSI-1
 ### 1. 环境
 
 - Windows 10 2004+ / Windows 11，Python **3.10 x64**。
-- 安装版约 **5 GB** 磁盘空间（含 Parakeet、HY-MT、CUDA 运行时和 Qt）。
+- 安装版约 **5.6 GB** 磁盘空间（含 Parakeet、HY-MT、CUDA/cuDNN 运行时和 Qt）。
 - 可选 NVIDIA GPU（推荐）；CPU 也能跑，但 large-v3-turbo 在 CPU 上通常无法实时。Parakeet ONNX 需要 CUDA/cuDNN 才能达到直播延迟。
 - 不填 DeepSeek Key 也能用：翻译选「本地模型」即可；需要 AI 预审或云端翻译时再填。
 - 首次使用：
@@ -458,7 +458,7 @@ main.py              入口
 - `dist/RoseSI/`：便携版目录，双击 `RoseSI.exe` 即可运行，无需安装 Python。
 - `release/RoseSI-1.2.0-Setup.exe`：Windows 安装包（Inno Setup），按用户安装，不要求管理员权限。
 
-> 仓库里已有的 1.2.0 安装包仍是旧品牌；重新执行 `build.ps1` 和 `installer.iss` 后会生成 RoseSI 名称的包。
+> `release/RoseSI-1.2.0-Setup.exe` 由下面的命令生成；如果修改了代码或模型，请重新构建，不要直接复用旧包。
 
 两种形式都内置：
 
@@ -485,7 +485,7 @@ powershell -ExecutionPolicy Bypass -File packaging\build.ps1
 - 翻译按句提交，不是逐词同传；静音断句决定了下限延迟。
 - 首次加载 CUDA 模型约 3–6 秒；模型常驻后再次开始会快很多。
 - 本地 HY-MT1.5 需要 `llama-cpp-python` 和 GGUF 模型；不装也能用 DeepSeek，不影响原有功能。
-- 打包版约 4.6 GB（含两个模型、CUDA 运行时和 Qt）；安装包压缩后约 2–3 GB。单文件（onefile）启动时会解压数 GB，不推荐。
+- 打包版约 5.6 GB（含 Parakeet、HY-MT、cuDNN、CUDA 运行时和 Qt）；安装包 3.41 GB，拆成两个 1.9 GB 以内的分卷。单文件（onefile）启动时会解压数 GB，不推荐。
 
 ## 许可证
 

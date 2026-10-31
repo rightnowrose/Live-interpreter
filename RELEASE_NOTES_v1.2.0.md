@@ -37,7 +37,7 @@ faster-whisper large-v3-turbo、Kotoba、HY-MT 7B 等其他模型不内置，可
 ## 系统要求
 
 - Windows 10 2004+ / Windows 11 x64
-- 约 5 GB 磁盘空间（安装版）
+- 约 5.6 GB 磁盘空间（安装版）
 - 推荐 NVIDIA GPU；CPU 可运行但实时性有限
 
 ## 数据与隐私
