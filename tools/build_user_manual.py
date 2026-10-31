@@ -363,8 +363,8 @@ def make_cover():
     draw.text((w // 2, 1665), "实时字幕 · 术语库 · 语料库 · 五十音图", font=f_small, fill=(190, 156, 180), anchor="ma")
 
     draw.line((180, 2085, w - 180, 2085), fill=(255, 120, 160, 70), width=1)
-    draw.text((w // 2, 2135), "Windows 10 / 11 x64   ·   本地优先   ·   代码 MIT", font=f_bottom, fill=(190, 165, 184), anchor="ma")
-    draw.text((w // 2, 2180), "2026 年 10 月", font=f_small, fill=(150, 125, 150), anchor="ma")
+    draw.text((w // 2, 2135), "Windows 10 / 11 x64   ·   作者：无媒介蔷薇   ·   代码 MIT", font=f_bottom, fill=(190, 165, 184), anchor="ma")
+    draw.text((w // 2, 2180), "Bilibili：space.bilibili.com/3747570723589225   ·   2026 年 10 月", font=f_small, fill=(150, 125, 150), anchor="ma")
 
     COVER.parent.mkdir(parents=True, exist_ok=True)
     img.convert("RGB").save(COVER, "PNG", optimize=True)
@@ -809,6 +809,12 @@ def add_content():
     body("仓库不提交模型权重；安装包内置模型时，请同时遵守对应模型许可证。")
     h2("12.4 免责声明")
     body("本软件按“现状”提供，不对识别/翻译准确性、直播合规性或第三方服务可用性作保证。请遵守直播平台、版权和当地法律；使用云端翻译时，不要发送你不允许外发的文本。")
+
+    h2("12.5 作者与社区")
+    body("作者：无媒介蔷薇（GitHub：@rightnowrose）。")
+    body("Bilibili 空间：https://space.bilibili.com/3747570723589225/dynamic")
+    body("GitHub 项目：https://github.com/rightnowrose/Live-interpreter")
+    body("遇到问题、想反馈术语或建议功能，欢迎在 GitHub 提 Issue，或在 Bilibili 空间留言。")
 
     appendix = h2("附录：模型与下载")
     appendix.paragraph_format.page_break_before = True

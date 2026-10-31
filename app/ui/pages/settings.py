@@ -788,9 +788,26 @@ class SettingsPage(QWidget):
         open_logs = button("查看日志", "ghost")
         open_logs.clicked.connect(lambda: os.startfile(paths.logs_dir() / "app.log"))
         card.add_widget(self._row("诊断日志", open_logs))
+        author = QLabel("无媒介蔷薇")
+        author.setObjectName("Dim")
+        author.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        card.add_widget(self._row("作者", author))
+        github = QLabel('<a href="https://github.com/rightnowrose">@rightnowrose</a>')
+        github.setTextFormat(Qt.RichText)
+        github.setOpenExternalLinks(True)
+        github.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        card.add_widget(self._row("GitHub", github))
+        bilibili = QLabel(
+            '<a href="https://space.bilibili.com/3747570723589225/dynamic">'
+            "space.bilibili.com/3747570723589225</a>"
+        )
+        bilibili.setTextFormat(Qt.RichText)
+        bilibili.setOpenExternalLinks(True)
+        bilibili.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        card.add_widget(self._row("Bilibili", bilibili))
         about = QLabel(
             "RoseSI · 本地实时同传\n"
-            "ASR: faster-whisper（本地 GPU） · 翻译: DeepSeek / OpenAI 兼容接口\n"
+            "ASR: Parakeet / faster-whisper（本地 GPU） · 翻译: DeepSeek / 本地 HY-MT\n"
             "术语匹配: Aho-Corasick 内存自动机 · 存储: SQLite"
         )
         about.setObjectName("Dim")
